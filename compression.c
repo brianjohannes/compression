@@ -13,35 +13,64 @@ int main(){
   int i;
 
 
-  printf("print the example input buffer")
+  printf("\nprint the example input buffer \n");
   for(i = 0; i < data_size; i++){
     printf(" %d ", buffer[i]);
   }
 
-  printf("the data size is %d bytes \n", data_size);
+  printf("\nthe data size is %d bytes \n", data_size);
 
   // create the pointer to our example buffer
   data_ptr = &buffer[0];
   new_size = byte_compress(data_ptr, data_size);
 
   printf("the new buffer size is %d bytes \n", new_size);
+  printf("print the example new buffer\n");
+  for(i = 0; i < new_size; i++){
+    printf(" %d ", buffer[i]);
+  }
+  printf("\n");
   return 0;
 }
 
 // The compression algorithm
 int byte_compress(short int* data_ptr, int data_size){
-  int new_buffer[];
+  int i;
+  short int single_add = 128;
+  short int* next_ptr;
+  short int same = 1;
 
-  // for each
-  for(i = 0; i < )
-  new_buffer[0] = data_ptr;
-  printf("the new buffer is %d \n", &new_buffer);
+  // short int* temp_ptr;
 
-  for(i = 0, i < data_size, i++){
-    printf(" %d ", new_buffer[i]);
+  // compress each value
+  int new_size = 0;
+  for(i = 0; i < data_size; i++){
+    // if different add 128
+    next_ptr = data_ptr + 1;
+    if(*data_ptr != *next_ptr){
+      *data_ptr += single_add;
+      new_size++;
+      data_ptr = next_ptr;
+      same = 0;
+    }
+
+    // if same find the length
+    else{
+      new_size++;
+      data_ptr = next_ptr;
+      same = 1;
+      /*
+      *temp_ptr = *data_ptr;
+      while(*temp_ptr == *(temp_ptr++)){
+
+
+        temp_ptr++
+      }
+      */
+
+    }
+    printf("i = %d,  same?: %d, address: %d \n",i,same,data_ptr);
   }
-
-  int new_size = 1;
   return new_size;
 }
 
