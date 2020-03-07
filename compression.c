@@ -9,11 +9,20 @@ int byte_compress(short int* data_ptr, int data_size);
 
 int main(){
   // example buffer and data_size
-  int data_size = 24;
+  int data_size = 180;
   int new_size;
   short int buffer[] = {0x03, 0x74, 0x04, 0x04, 0x04, 0x35, 0x35, 0x64,
     0x64, 0x64, 0x64, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x56, 0x45, 0x56, 0x56, 0x56, 0x09, 0x09, 0x09};
+    0x56, 0x45, 0x56, 0x56, 0x56, 0x09, 0x09, 0x09,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
   short int* data_ptr;
   int i;
 
@@ -41,10 +50,8 @@ int main(){
 // Run-Length Compression
 int byte_compress(short int* data_ptr, int data_size){
   int new_size = 0;
-  int i;
-  short int single_add = 128;
-  short int run_length;
-  short int run_value;
+  short int run_length;         // the number of times repeated
+  short int run_value;          // the repeated value
   short int* write_ptr;         // Write location
   short int same = 1;           // debug
 
@@ -52,7 +59,7 @@ int byte_compress(short int* data_ptr, int data_size){
   write_ptr = data_ptr;
 
   // compress each value
-  for(i = 0; i < data_size; i++){
+  for(int i = 0; i < data_size; i++){
     // if values are different
     if(*data_ptr != *(data_ptr + 1)){
       *write_ptr = *data_ptr + 128;
@@ -69,7 +76,7 @@ int byte_compress(short int* data_ptr, int data_size){
       // Initialize run length to 1 and loop until the end
       run_length = 1;
       run_value = *data_ptr;
-      while(*data_ptr == *(data_ptr + run_length) & run_length < 128){
+      while(*data_ptr == *(data_ptr + run_length) & run_length < 127){
         run_length++;
       }
 
