@@ -1,3 +1,8 @@
+// Compression Example
+// Written by: Brian Irvine
+// Created: 03.06.2020
+// Last edit: 03.07.2020
+
 #include<stdio.h>
 
 int byte_compress(short int* data_ptr, int data_size);
@@ -33,43 +38,56 @@ int main(){
   return 0;
 }
 
-// The compression algorithm
+// Run-Length Compression
 int byte_compress(short int* data_ptr, int data_size){
+  int new_size = 0;
   int i;
   short int single_add = 128;
-  short int* next_ptr;
-  short int same = 1;
+  short int run_length;
+  short int run_value;
+  short int* write_ptr;         // Write location
+  short int same = 1;           // debug
 
-  // short int* temp_ptr;
+  // Initialize the writing pointer to the data_pointer
+  write_ptr = data_ptr;
 
   // compress each value
-  int new_size = 0;
   for(i = 0; i < data_size; i++){
-    // if different add 128
-    next_ptr = data_ptr + 1;
-    if(*data_ptr != *next_ptr){
-      *data_ptr += single_add;
+    // if values are different
+    if(*data_ptr != *(data_ptr + 1)){
+      *write_ptr = *data_ptr + 128;
+
+      // Advance
+      data_ptr++;
+      write_ptr++;
       new_size++;
-      data_ptr = next_ptr;
-      same = 0;
+      same = 0; //debug ***
     }
 
-    // if same find the length
+    // if values are the same
     else{
-      new_size++;
-      data_ptr = next_ptr;
-      same = 1;
-      /*
-      *temp_ptr = *data_ptr;
-      while(*temp_ptr == *(temp_ptr++)){
-
-
-        temp_ptr++
+      // Initialize run length to 1 and loop until the end
+      run_length = 1;
+      run_value = *data_ptr;
+      while(*data_ptr == *(data_ptr + run_length) & run_length < 128){
+        run_length++;
       }
-      */
 
+      // Save the run length
+      *write_ptr = run_length;
+
+      // Increment and save the repeated value
+      write_ptr++;
+      *write_ptr = run_value;
+
+      // Advance
+      data_ptr += run_length;
+      write_ptr++;
+      new_size += 2;
+      same = 1;
+      i += (run_length - 1);
     }
-    printf("i = %d,  same?: %d, address: %d \n",i,same,data_ptr);
+    printf("i = %d,  same?: %d, address: %d, new_size: %d\n",i,same,data_ptr,new_size);
   }
   return new_size;
 }
