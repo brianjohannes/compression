@@ -1,7 +1,7 @@
 // Compression Example
 // Written by: Brian Irvine
 // Created: 03.06.2020
-// Last edit: 03.07.2020
+// Last edit: 03.08.2020
 
 #include<stdio.h>
 #include<string.h>
@@ -11,51 +11,44 @@ int byte_decompress(short int* data_ptr, int comp_size);
 
 int main(){
   // example buffer and data_size
-  int data_size = 180;
+  int data_size = 24;
   int new_size;
   int original_size;
   short int buffer[] = {0x03, 0x74, 0x04, 0x04, 0x04, 0x35, 0x35, 0x64,
     0x64, 0x64, 0x64, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x56, 0x45, 0x56, 0x56, 0x56, 0x09, 0x09, 0x09,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-    ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-    ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-    ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-    ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-    ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-    ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-    ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    0x56, 0x45, 0x56, 0x56, 0x56, 0x09, 0x09, 0x09};
   short int* data_ptr;
   int i;
 
-
-  printf("\nprint the example input buffer \n");
+  // Print the original buffer
+  printf("\nPrint the example input buffer \n");
   for(i = 0; i < data_size; i++){
     printf(" %d ", buffer[i]);
   }
-
-  printf("\nthe data size is %d bytes \n", data_size);
+  printf("\nThe data size is %d bytes \n\n", data_size);
 
   // create the pointer to our example buffer
   data_ptr = &buffer[0];
+
+  // Compress the buffer
   new_size = byte_compress(data_ptr, data_size);
 
-  printf("the new buffer size is %d bytes \n", new_size);
-  printf("print the example new buffer\n");
+  // Print the compressed buffer
+  printf("Print the example buffer after compression\n");
   for(i = 0; i < new_size; i++){
     printf(" %d ", buffer[i]);
   }
-  printf("\n");
+  printf("\nThe compressed buffer size is %d bytes \n\n", new_size);
 
+  // Decompress the buffer
   original_size = byte_decompress(data_ptr, new_size);
 
-  printf("the original buffer size is %d bytes \n", original_size);
-  printf("print the example new buffer\n");
+  // Print the decompressed buffer
+  printf("Print the example buffer after decompression\n");
   for(i = 0; i < original_size; i++){
     printf(" %d ", buffer[i]);
   }
-  printf("\n");
+  printf("\nThe decompressed buffer size is %d bytes \n\n", original_size);
 
   return 0;
 }
@@ -81,7 +74,6 @@ int byte_compress(short int* data_ptr, int data_size){
       data_ptr++;
       write_ptr++;
       new_size++;
-      same = 0; //debug ***
     }
 
     // if values are the same
@@ -104,16 +96,15 @@ int byte_compress(short int* data_ptr, int data_size){
       data_ptr += run_length;
       write_ptr++;
       new_size += 2;
-      same = 1;
 
       // Skip over all the repeated values
       i += (run_length - 1);
     }
-    printf("i = %d,  same?: %d, address: %d, new_size: %d\n",i,same,data_ptr,new_size);
   }
   return new_size;
 }
 
+// Run length decompression
 int byte_decompress(short int* data_ptr, int compressed_size){
   short int* write_ptr;
   short int run;
@@ -122,14 +113,15 @@ int byte_decompress(short int* data_ptr, int compressed_size){
   short int bigbuffer[compressed_size];
   int original_size = 0;
 
-  write_ptr = data_ptr;         // Overwrite the old buffer
+  write_ptr = data_ptr;         // Set the write pointer to the begining of the buffer
   data_ptr = &bigbuffer[0];     // Put the
 
-  // Copy the buffer
+  // Copy the buffer to a new memory location to avoid overwriting
   memcpy(data_ptr, write_ptr, compressed_size*4);
 
+
   for(int i = 0; i < compressed_size; i++){
-    // if value > 127
+    // if value > 127 it is a single value
     if(*data_ptr >= 128){
       *write_ptr = (*data_ptr) - 128;
 
@@ -137,21 +129,22 @@ int byte_decompress(short int* data_ptr, int compressed_size){
       write_ptr++;
       original_size++;
     }
+    // if value < 127 it is a run
     else{
       run_length = *data_ptr;
       run_value = *(data_ptr + 1);
       run = 1;
 
+      // For the length of the run write the value to the write pointer
       while(run <= run_length){
         *write_ptr = run_value;
         write_ptr++;
         original_size++;
         run++;
       }
-      data_ptr += 2;
-      i++;
+      data_ptr += 2;      // skip the next value in the data buffer
+      i++;                // skip the next iteration of the loop
     }
-    //printf("i = %d,  same?: %d, address: %d, new_size: %d\n",i,same,data_ptr,new_size);
   }
   return original_size;
 }
