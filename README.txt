@@ -15,6 +15,7 @@ The compression algorithm uses run-length encoding with the following rules
   (ex. 150 repeats of 0 would be [127 0 23 0] not [150 0])
 
 The decompression algorithm reverses the run-length encoding
+- Copy the compressed buffer to a new memory location to avoid overwriting
 - Values > 127 are isolated values, so just subtract 128
-- Values <= 127 are runs, so record the run length and value then write the value
-  for the length of the run
+- Values <= 127 are run lengths which will be followed directly by the run value,
+  record the run value into each memory location for the length of the run
