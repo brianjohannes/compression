@@ -1,7 +1,7 @@
 A C program for run-length encoding compression of a pre-determined buffer.
 
 Constraints:
-- The buffer can only contain short ints from 0 to 127
+- The buffer can only contain unsigned chars from 0 to 127
 - This program does not support buffers longer that can be defined by single int
 
 compression.c contains an example buffer which is compressed and then decompressed

@@ -6,18 +6,18 @@
 #include<stdio.h>
 #include<string.h>
 
-int byte_compress(short int* data_ptr, int data_size);
-int byte_decompress(short int* data_ptr, int comp_size);
+int byte_compress(unsigned char* data_ptr, int data_size);
+int byte_decompress(unsigned char* data_ptr, int comp_size);
 
 int main(){
   // example buffer and data_size
   int data_size = 24;
   int new_size;
   int original_size;
-  short int buffer[] = {0x03, 0x74, 0x04, 0x04, 0x04, 0x35, 0x35, 0x64,
+  unsigned char buffer[] = {0x03, 0x74, 0x04, 0x04, 0x04, 0x35, 0x35, 0x64,
     0x64, 0x64, 0x64, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x56, 0x45, 0x56, 0x56, 0x56, 0x09, 0x09, 0x09};
-  short int* data_ptr;
+  unsigned char* data_ptr;
   int i;
 
   // Print the original buffer
@@ -54,12 +54,12 @@ int main(){
 }
 
 // Run-Length Compression
-int byte_compress(short int* data_ptr, int data_size){
+int byte_compress(unsigned char* data_ptr, int data_size){
   int new_size = 0;
-  short int run_length;         // the number of times repeated
-  short int run_value;          // the repeated value
-  short int* write_ptr;         // Write location
-  short int same = 1;           // debug
+  unsigned char run_length;         // the number of times repeated
+  unsigned char run_value;          // the repeated value
+  unsigned char* write_ptr;         // Write location
+  unsigned char same = 1;           // debug
 
   // Initialize the writing pointer to the data_pointer
   write_ptr = data_ptr;
@@ -105,12 +105,12 @@ int byte_compress(short int* data_ptr, int data_size){
 }
 
 // Run length decompression
-int byte_decompress(short int* data_ptr, int compressed_size){
-  short int* write_ptr;
-  short int run;
-  short int run_length;
-  short int run_value;
-  short int bigbuffer[compressed_size];
+int byte_decompress(unsigned char* data_ptr, int compressed_size){
+  unsigned char* write_ptr;
+  unsigned char run;
+  unsigned char run_length;
+  unsigned char run_value;
+  unsigned char bigbuffer[compressed_size];
   int original_size = 0;
 
   write_ptr = data_ptr;         // Set the write pointer to the begining of the buffer
@@ -119,7 +119,7 @@ int byte_decompress(short int* data_ptr, int compressed_size){
   // Copy the buffer to a new memory location to avoid overwriting
   memcpy(data_ptr, write_ptr, compressed_size*4);
 
-
+  original_size = 0;
   for(int i = 0; i < compressed_size; i++){
     // if value > 127 it is a single value
     if(*data_ptr >= 128){
@@ -142,6 +142,7 @@ int byte_decompress(short int* data_ptr, int compressed_size){
         original_size++;
         run++;
       }
+      
       data_ptr += 2;      // skip the next value in the data buffer
       i++;                // skip the next iteration of the loop
     }
