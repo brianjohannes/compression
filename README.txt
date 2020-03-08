@@ -1,5 +1,3 @@
-Written by Brian Irvine
-
 A C program for run-length encoding compression of a pre-determined buffer.
 
 Constraints:
